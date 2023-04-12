@@ -86,6 +86,7 @@ export class OrderRepository {
 
             return { message: "Order placed successfully", order };
         } catch (error) {
+            console.log('error', error)
             throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
     }

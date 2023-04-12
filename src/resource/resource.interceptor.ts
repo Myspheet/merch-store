@@ -32,15 +32,13 @@ export class ResourceInterceptor implements NestInterceptor {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-    console.log('got here first', res);
     const statusCode = response.statusCode;
-    const { message = '', ...data } = res ?? { message: '', data: [] };
+    // const { message = '', ...data } = res ?? { message: '', data: [] };
 
     return {
       status: true,
       statusCode,
-      message,
-      data
+      data: res
     };
   }
 }

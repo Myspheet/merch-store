@@ -27,6 +27,7 @@ CREATE TABLE "Product" (
     "weight" DECIMAL(65,30) NOT NULL,
     "status" BOOLEAN NOT NULL DEFAULT true,
     "quantity" INTEGER NOT NULL,
+    "description" TEXT,
     "categoryId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -121,13 +122,15 @@ CREATE TABLE "Variation" (
 -- CreateTable
 CREATE TABLE "Order" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" INTEGER,
     "total" DECIMAL(65,30) NOT NULL,
     "subtotal" DECIMAL(65,30) NOT NULL,
     "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
     "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
     "transactionCode" TEXT,
     "paymentMethodId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
@@ -139,9 +142,10 @@ CREATE TABLE "OrderItem" (
     "productId" INTEGER NOT NULL,
     "productName" TEXT NOT NULL,
     "price" DECIMAL(65,30) NOT NULL,
+    "total" DECIMAL(65,30),
     "quantity" INTEGER NOT NULL,
     "attributes" JSONB,
-    "prouctImage" TEXT NOT NULL,
+    "productImage" TEXT,
 
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
@@ -223,9 +227,6 @@ CREATE UNIQUE INDEX "Attribute_attributeCode_key" ON "Attribute"("attributeCode"
 CREATE UNIQUE INDEX "AttributeValue_code_value_key" ON "AttributeValue"("code", "value");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Order_paymentMethodId_key" ON "Order"("paymentMethodId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "DeliveryInformation_orderId_key" ON "DeliveryInformation"("orderId");
 
 -- CreateIndex
@@ -253,7 +254,7 @@ ALTER TABLE "Variation" ADD CONSTRAINT "Variation_attributeValueId_fkey" FOREIGN
 ALTER TABLE "Variation" ADD CONSTRAINT "Variation_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_paymentMethodId_fkey" FOREIGN KEY ("paymentMethodId") REFERENCES "PaymentMethod"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

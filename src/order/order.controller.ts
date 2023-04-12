@@ -8,8 +8,8 @@ import { AdminJwtAuthGuard } from 'src/auth/strategy/jwt/admin-auth.guard';
 import { GetUser } from 'src/auth/get-user.decorator';
 
 @ApiTags('Orders')
-@UseGuards(JwtAuthGuard)
-@Controller('order')
+// @UseGuards(JwtAuthGuard)
+@Controller('orders')
 export class OrderController {
   userId = 1;
 
@@ -24,10 +24,10 @@ export class OrderController {
   findAll(@GetUser() user) {
     console.log('user', user);
     const isAdmin = 107;
-    if (user.role == isAdmin) {
+    // if (user.role == isAdmin) {
       return this.orderService.findAll();
-    }
-    return this.orderService.findAll(user.id);
+    // }
+    // return this.orderService.findAll(user.id);
   }
 
   @Get(':id')

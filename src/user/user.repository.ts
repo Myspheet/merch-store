@@ -26,7 +26,7 @@ export class UserRepository {
     async findAll() {
         try {
             const users = await this.getModel().findMany({
-                where: { role: 10 }
+                where: { role: 15 }
             });
 
             return users;

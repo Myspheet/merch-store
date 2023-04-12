@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { HashingService } from './hashing/hashing.service';
 import { UserRepository } from 'src/user/user.repository';
 import { JwtService } from '@nestjs/jwt';
@@ -59,7 +59,7 @@ export class AuthService {
 
             return this.generateTokens({ sub, email });
         } else {
-            throw new UnauthorizedException("Invalid Email or Password");
+            throw new HttpException("Invalid Email or Password", HttpStatus.BAD_REQUEST);
         }
     }
 

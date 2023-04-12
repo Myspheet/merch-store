@@ -243,6 +243,34 @@ const products = [
     },
 ];
 
+const paymentMethods = [
+    {
+        id: 1,
+        name: 'Paypal',
+    },
+    {
+        id: 2,
+        name: 'Paystack',
+    },
+    {
+        id: 3,
+        name: 'Flutterwave',
+    }
+];
+
+const users = [
+    {
+        id: 1,
+        email: 'jane@gmail.com',
+        name: 'Jane Doe',
+    },
+    {
+        id: 2,
+        email: 'john@gmail.com',
+        name: 'John Doe',
+    }
+];
+
 async function main() {
     for (let i = 0; i < attributes.length; i++) {
         const attribute = attributes[i];
@@ -334,46 +362,30 @@ async function main() {
         });
     }
 
+    for (let i = 0; i < paymentMethods.length; i++) {
+        const attribute = paymentMethods[i]
 
-    // attributeValue.forEach(async (attribute) => {
-    //     await prisma.attributeValue.upsert({
-    //         where: { id: attribute.id },
-    //         update: {},
-    //         create: {
-    //             id: attribute.id,
-    //             code: attribute.code,
-    //             value: attribute.value,
-    //             attributeId: 2
-    //         }
-    //     });
-    // });
+        await prisma.paymentMethod.upsert({
+            where: { id: attribute.id },
+            update: {},
+            create: {
+                ...attribute
+            }
+        });
+    }
 
-    // attributeColorValue.forEach(async (attribute) => {
-    //     await prisma.attributeValue.upsert({
-    //         where: { id: attribute.id },
-    //         update: {},
-    //         create: {
-    //             id: attribute.id,
-    //             code: attribute.code,
-    //             value: attribute.value,
-    //             attributeId: 1
-    //         }
-    //     });
-    // });
+    for (let i = 0; i < users.length; i++) {
+        const attribute = users[i]
 
-    // products.forEach(async (attribute) => {
-    //     const { variation, ...product } = attribute;
-    //     await prisma.product.upsert({
-    //         where: { slug: attribute.slug },
-    //         update: {},
-    //         create: {
-    //             ...product,
-    //             variations: {
-    //                 create: variation
-    //             }
-    //         }
-    //     });
-    // });
+        await prisma.user.upsert({
+            where: { id: attribute.id },
+            update: {},
+            create: {
+                ...attribute
+            }
+        });
+    }
+
 }
 
 main()

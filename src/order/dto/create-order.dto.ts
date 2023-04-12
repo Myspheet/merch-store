@@ -87,10 +87,8 @@ export class CreateOrderDto {
     transactionCode?: string;
 
     @ApiProperty()
-    @IsDecimal()
     subtotal: Prisma.Decimal
 
     @ApiProperty()
-    @IsDecimal()
     total: Prisma.Decimal
 }
