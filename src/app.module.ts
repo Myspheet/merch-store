@@ -6,11 +6,12 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
+import { CatalogModule } from './catalog/catalog.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
-  }), UserModule, AuthModule, PrismaModule, CategoryModule],
+  }), UserModule, AuthModule, PrismaModule, CategoryModule, CatalogModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -24,10 +24,15 @@ model Category {
 }
 
 model Product {
-  id         Int       @id @default(autoincrement())
-  slug       String?
-  name       String?
-  price      Float
+  id     Int     @id @default(autoincrement())
+  uuid   String  @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug   String?
+  name   String
+  sku    String
+  price  Float
+  weight Float
+  status Boolean @default(true)
+
   category   Category? @relation(fields: [categoryId], references: [id])
   categoryId Int?
 
@@ -45,6 +50,7 @@ model User {
   refresh_token   String?
   photo_url       String?
   refreshTokens   RefreshToken[]
+  role            Int            @default(15)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
