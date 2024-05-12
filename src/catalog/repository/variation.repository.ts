@@ -1,61 +1,49 @@
 import { ConflictException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Category } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Category as CategoryEntity } from '../entities/category.entity';
-import { CreateCategoryDto } from '../dto/create-category.dto';
-import { UpdateCategoryDto } from '../dto/update-category.dto';
 
 @Injectable()
-export class CategoryRepository {
+export class VariationRepository {
     constructor(private readonly prismaService: PrismaService) { }
 
-    async findAll() {
+    async findAll(productId) {
         try {
-            const category = await this.prismaService.category.findMany();
-            return category;
+            const variations = await this.prismaService.variation.findMany({
+                where: { productId },
+                include: {
+                    attribute: true,
+                    attributeValue: true
+                }
+            });
+            return variations;
         } catch (error) {
 
         }
     }
 
     // Use only for auth modules as it returns the password as well
-    async findBySlug(slug: string) {
-        const category = await this.prismaService.category.findUnique({
-            where: { slug }
-        })
-        return category;
-    }
+    // async findBySlug(slug: string) {
+    //     const category = await this.prismaService.product.findUnique({
+    //         where: { slug }
+    //     })
+    //     return category;
+    // }
 
     async findById(id: number) {
-        const category = await this.prismaService.category.findUnique({
+        const category = await this.prismaService.product.findUnique({
             where: { id }
         });
 
         return category;
     }
 
-    async findCategoryProducts(id: number) {
-        const category = await this.prismaService.category.findUnique({
-            where: { id },
-            include: {
-                products: {
-                    include: {
-                        variations: true
-                    }
-                }
-            }
-        });
-
-        return category;
-    }
-
-    async create(createCategoryDto: CreateCategoryDto) {
+    async create(createVariationDto, productId) {
         try {
-            const user = await this.prismaService.category.create({
-                data: { ...createCategoryDto }
+            const variation = await this.prismaService.variation.create({
+                data: { ...createVariationDto }
             });
 
-            return user;
+            return variation;
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -66,10 +54,10 @@ export class CategoryRepository {
         }
     }
 
-    async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    async update(id: number, updateProductDto) {
         try {
-            const category = await this.prismaService.category.update({
-                data: { ...updateCategoryDto },
+            const category = await this.prismaService.product.update({
+                data: { ...updateProductDto },
                 where: { id }
             });
 
@@ -86,7 +74,7 @@ export class CategoryRepository {
 
     async delete(id: number) {
         try {
-            const category = await this.prismaService.category.delete({
+            const category = await this.prismaService.product.delete({
                 where: { id }
             });
 
@@ -96,6 +84,10 @@ export class CategoryRepository {
         }
 
         return false;
+    }
+
+    private getModel() {
+        return this.prismaService.user;
     }
 
     private exclude<User, Key extends keyof User>(

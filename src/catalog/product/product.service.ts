@@ -7,8 +7,14 @@ import { ProductRepository } from './repository/product.repository';
 export class ProductService {
   constructor(private readonly productRepository: ProductRepository) { }
 
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  create(createProductDto) {
+    const { variation = [], ...product } = createProductDto;
+
+    if (variation.length > 0) {
+      return this.productRepository.createProductWithVariation(product, variation);
+    }
+
+    return this.productRepository.create(product);
   }
 
   async findAll() {
@@ -24,6 +30,6 @@ export class ProductService {
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} product`;
+    return this.productRepository.delete(id);
   }
 }

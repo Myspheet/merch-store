@@ -10,11 +10,13 @@ import jwtConfig from './config/jwt.config';
 import { GoogleSigninDto } from './dto/google-signin.dto';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { RefreshTokenRepository } from './repository/refreshToken.repository';
+import { AdminRepository } from './repository/admin.repository';
 
 @Injectable()
 export class AuthService {
     constructor(
         private userRepository: UserRepository,
+        private adminRepository: AdminRepository,
         private hashingService: HashingService,
         @Inject(jwtConfig.KEY)
         private jwtConfiguration: ConfigType<typeof jwtConfig>,
@@ -61,6 +63,20 @@ export class AuthService {
         }
     }
 
+    async adminSignIn(signInDto: SignInDto) {
+        const { email, password } = signInDto;
+        const user = await this.adminRepository.findByEmail(email);
+
+        if (user && this.hashingService.compare(password, user.password)) {
+            const { id: sub, role } = user;
+            const payload: JwtPayload = { email, sub, role };
+
+            return this.generateTokens(payload);
+        } else {
+            throw new UnauthorizedException("Invalid Email or Password");
+        }
+    }
+
     async handleGoogleRedirect(user: UserEntity) {
         return this.generateTokens({ sub: user.id, email: user.email });
     }
@@ -98,9 +114,9 @@ export class AuthService {
     }
 
     private async generateTokens(user: JwtPayload, oldRefreshToken?: string) {
-        const { sub, email } = user;
+        const { sub, ...payload } = user;
         const [accessToken, refreshToken] = await Promise.all([
-            this.signToken(sub, this.jwtConfiguration.accessTokenTtl, this.jwtConfiguration.secret, { email }),
+            this.signToken(sub, this.jwtConfiguration.accessTokenTtl, this.jwtConfiguration.secret, { payload }),
             this.signToken(sub, this.jwtConfiguration.refreshTokenTtl, this.jwtConfiguration.refreshSecret)
         ]);
 

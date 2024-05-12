@@ -11,7 +11,15 @@ export class ProductRepository {
 
     async findAll() {
         try {
-            const products = await this.prismaService.product.findMany();
+            const products = await this.getModel().findMany({
+                include: {
+                    variations: {
+                        include: {
+                            attributeValue: true
+                        }
+                    }
+                }
+            });
             return products;
         } catch (error) {
 
@@ -20,27 +28,35 @@ export class ProductRepository {
 
     // Use only for auth modules as it returns the password as well
     // async findBySlug(slug: string) {
-    //     const category = await this.prismaService.product.findUnique({
+    //     const category = await this.getModel().findUnique({
     //         where: { slug }
     //     })
     //     return category;
     // }
 
     async findById(id: number) {
-        const category = await this.prismaService.product.findUnique({
-            where: { id }
+        const product = await this.getModel().findUnique({
+            where: { id },
+            include: {
+                variations: {
+                    include: {
+                        attributeValue: true
+                    }
+                }
+            }
         });
 
-        return category;
+        return product;
     }
 
-    async create(createProductDto: CreateProductDto) {
+    async create(createProductDto) {
         try {
-            const user = await this.prismaService.product.create({
+            console.log('createProduct', createProductDto);
+            const product = await this.getModel().create({
                 data: { ...createProductDto }
             });
 
-            return user;
+            return product;
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -51,14 +67,32 @@ export class ProductRepository {
         }
     }
 
+    async createProductWithVariation(createProduct, variation) {
+        try {
+            const product = await this.getModel().create({
+                data: {
+                    ...createProduct,
+                    variations: {
+                        create: variation
+                    }
+                }
+            });
+
+            return product;
+        } catch (error) {
+            console.log('error', error)
+            throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     async update(id: number, updateProductDto: UpdateProductDto) {
         try {
-            const category = await this.prismaService.product.update({
+            const product = await this.getModel().update({
                 data: { ...updateProductDto },
                 where: { id }
             });
 
-            return category;
+            return product;
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -71,7 +105,7 @@ export class ProductRepository {
 
     async delete(id: number) {
         try {
-            const category = await this.prismaService.product.delete({
+            const product = await this.getModel().delete({
                 where: { id }
             });
 
@@ -81,6 +115,10 @@ export class ProductRepository {
         }
 
         return false;
+    }
+
+    private getModel() {
+        return this.prismaService.product;
     }
 
     private exclude<User, Key extends keyof User>(

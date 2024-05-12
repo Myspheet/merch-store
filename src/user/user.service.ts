@@ -1,23 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { UpdateProductDto } from 'src/catalog/product/dto/update-product.dto';
+import { UserRepository } from './user.repository';
 
 export type Tenant = any;
 
 @Injectable()
 export class UserService {
-  private readonly tenants = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-  ];
+  constructor(private readonly userRepository: UserRepository) { }
 
-  async findOne(username: string): Promise<Tenant | undefined> {
-    return this.tenants.find(tenant => tenant.username === username);
+  create(createUserDto) {
+    return this.userRepository.create(createUserDto);
+  }
+
+  async findAll() {
+    return await this.userRepository.findAll();
+  }
+
+  async findOne(id: number) {
+    return this.userRepository.findById(id);
+  }
+
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    return this.userRepository.update(id, updateProductDto);
+  }
+
+  async remove(id: number) {
+    return this.userRepository.delete(id);
   }
 }

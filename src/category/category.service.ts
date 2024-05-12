@@ -21,6 +21,10 @@ export class CategoryService {
     return await this.categoryRepository.findById(id);
   }
 
+  async findCategoryProducts(id: number) {
+    return await this.categoryRepository.findCategoryProducts(id);
+  }
+
   async findBySlug(slug: string) {
     return await this.categoryRepository.findBySlug(slug);
   }

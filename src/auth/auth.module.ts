@@ -14,6 +14,8 @@ import { JwtStrategy } from './strategy/jwt/jwt.strategy';
 import jwtConfig from './config/jwt.config';
 import { RefreshTokenRepository } from './repository/refreshToken.repository';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { AdminRepository } from './repository/admin.repository';
+import { AdminJwtStrategy } from './strategy/jwt/admin-jwt.strategy';
 
 @Module({
   imports: [
@@ -35,7 +37,9 @@ import { PrismaModule } from 'src/prisma/prisma.module';
     },
     GoogleGuard,
     GoogleStrategy,
-    RefreshTokenRepository
+    RefreshTokenRepository,
+    AdminRepository,
+    AdminJwtStrategy
   ],
   controllers: [AuthController]
 })

@@ -1,22 +1,38 @@
-import { ConflictException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserEntity } from './entity/user.entity';
 
 @Injectable()
-export class UserRepository {
+export class AdminRepository {
     constructor(private readonly prismaService: PrismaService) { }
 
     // Use only for auth modules as it returns the password as well
     async findByEmail(email: string) {
-        const user = await this.prismaService.user.findUnique({
+        const user = await this.getModel().findUnique({
             where: { email }
         })
         return user;
     }
 
+    async findByEmailAndId(email: string, id: number) {
+        try {
+            const user = await this.getModel().findUnique({
+                where: { id, email }
+            });
+
+            if (!user) {
+                throw new UnauthorizedException();
+            }
+
+            return this.exclude(user, ['password']);
+
+        } catch (error) {
+
+        }
+    }
+
     async findById(id: number) {
-        const user = await this.prismaService.user.findUnique({
+        const user = await this.getModel().findUnique({
             where: { id }
         });
 
@@ -35,7 +51,7 @@ export class UserRepository {
         }
     }
 
-    async create(createTenantDto: UserEntity) {
+    async create(createTenantDto) {
         try {
             const user = await this.getModel().create({
                 data: { ...createTenantDto }
@@ -43,7 +59,6 @@ export class UserRepository {
 
             return this.exclude(user, ['password']);
         } catch (error) {
-            console.log(error);
             if (error.code == 'P2002') {
                 throw new ConflictException("A user with this email already exists");
             }
@@ -77,17 +92,17 @@ export class UserRepository {
         }
     }
 
-    async updateRefreshToken(userId: number, refreshToken: string) {
-        const user = await this.getModel().update({
-            where: { id: userId },
-            data: { refresh_token: refreshToken }
-        });
+    // async updateRefreshToken(userId: number, refreshToken: string) {
+    //     const user = await this.getModel().update({
+    //         where: { id: userId },
+    //         data: { refresh_token: refreshToken }
+    //     });
 
-        return this.exclude(user, ['password']);
-    }
+    //     return this.exclude(user, ['password']);
+    // }
 
     private getModel() {
-        return this.prismaService.user;
+        return this.prismaService.admin;
     }
 
     private exclude<User, Key extends keyof User>(

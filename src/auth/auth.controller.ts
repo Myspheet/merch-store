@@ -30,6 +30,15 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
+  @ApiBody({ type: SignInDto })
+  @HttpCode(HttpStatus.OK)
+  @Post('/admin/signin')
+  adminSignIn(
+    @Body() signInDto: SignInDto
+  ) {
+    return this.authService.adminSignIn(signInDto);
+  }
+
   // @UseGuards(GoogleGuard)
   // @Get('google/redirect')
   // handlerRedirect(@Req() req) {
