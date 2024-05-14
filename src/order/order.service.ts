@@ -13,7 +13,7 @@ export class OrderService {
   }
 
   findAll(userId = null) {
-    return this.findAll(userId);
+    return this.orderRepository.findAll(userId);
   }
 
   findOne(id: number) {

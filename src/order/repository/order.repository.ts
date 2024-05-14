@@ -13,23 +13,25 @@ export class OrderRepository {
         try {
             let orders;
             if (userId) {
-                return await this.getModel().findMany({
+                orders = await this.getModel().findMany({
                     where: { userId },
                     include: {
                         orderItems: true,
                         deliveryInformation: true
                     }
                 });
+            } else {
+                orders = await this.getModel().findMany({
+                    include: {
+                        orderItems: true,
+                        deliveryInformation: true
+                    }
+                });
             }
-            orders = await this.getModel().findMany({
-                include: {
-                    orderItems: true,
-                    deliveryInformation: true
-                }
-            });
-            return orders;
+
+            return { message: "Successful", orders };
+
         } catch (error) {
-            console.log(error);
             throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
     }
@@ -58,7 +60,7 @@ export class OrderRepository {
                 }
             });
 
-            return order;
+            return { message: "Successfull", order };
 
         } catch (error) {
             console.log(error);
@@ -81,9 +83,8 @@ export class OrderRepository {
                 }
             });
 
-            return order;
+            return { message: "Order placed successfully", order };
         } catch (error) {
-            console.log(error);
             throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
     }
@@ -99,7 +100,7 @@ export class OrderRepository {
                 }
             });
 
-            return order;
+            return { mesage: "Order Created Successfully", order };
         } catch (error) {
 
         }
@@ -112,7 +113,7 @@ export class OrderRepository {
                 where: { id }
             });
 
-            return order;
+            return { message: "Order Updated Successfully", order };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -130,7 +131,7 @@ export class OrderRepository {
                 where: { id: orderId }
             });
 
-            return order;
+            return { message: "Order Status has been updated", order };
         } catch (error) {
             console.log(error);
             throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
@@ -143,7 +144,7 @@ export class OrderRepository {
                 where: { id }
             });
 
-            return true;
+            return { message: "Order has been deleted successfully" };
         } catch (error) {
             console.log(error);
             throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);

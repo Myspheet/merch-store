@@ -5,6 +5,7 @@ import { UpdateOrderDto, UpdateOrderStatusDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/strategy/jwt/jwt-auth.guard';
 import { AdminJwtAuthGuard } from 'src/auth/strategy/jwt/admin-auth.guard';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 @ApiTags('Orders')
 @UseGuards(JwtAuthGuard)
@@ -20,8 +21,13 @@ export class OrderController {
   }
 
   @Get()
-  findAll() {
-    return this.orderService.findAll(this.userId);
+  findAll(@GetUser() user) {
+    console.log('user', user);
+    const isAdmin = 107;
+    if (user.role == isAdmin) {
+      return this.orderService.findAll();
+    }
+    return this.orderService.findAll(user.id);
   }
 
   @Get(':id')
