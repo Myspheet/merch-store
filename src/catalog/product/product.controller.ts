@@ -15,7 +15,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
   @Post()
-  // @UseGuards(AdminJwtAuthGuard)
+  @UseGuards(AdminJwtAuthGuard)
   @UseInterceptors(FilesInterceptor('files', 10, {
     storage: diskStorage({
       destination: "./uploads/product/images",
