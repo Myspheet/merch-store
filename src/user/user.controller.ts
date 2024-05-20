@@ -1,19 +1,19 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
-@ApiTags('Users')
-@Controller('user')
+@ApiTags('Customers')
+@Controller('customer')
 export class UserController {
     constructor(
         private readonly userService: UserService
     ) { }
 
     @Post()
-    create(@Body() createProductDto) {
-        console.log('createProductss', createProductDto);
-
-        return this.userService.create(createProductDto);
+    create(@Body() createUserDto: CreateUserDto) {
+        return this.userService.create(createUserDto);
     }
 
     @Get()
@@ -27,8 +27,8 @@ export class UserController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateProductDto) {
-        return this.userService.update(+id, updateProductDto);
+    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+        return this.userService.update(+id, updateUserDto);
     }
 
     @Delete(':id')

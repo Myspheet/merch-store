@@ -37,7 +37,7 @@ CREATE TABLE "Product" (
 -- CreateTable
 CREATE TABLE "Gallery" (
     "id" SERIAL NOT NULL,
-    "image_url" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
     "default" BOOLEAN NOT NULL DEFAULT false,
     "productId" INTEGER NOT NULL,
 
@@ -61,10 +61,10 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT,
-    "phone_number" TEXT,
+    "phoneNumber" TEXT,
     "password" TEXT,
-    "signin_provider" TEXT,
-    "refresh_token" TEXT,
+    "signinProvider" TEXT,
+    "refreshToken" TEXT,
     "photo_url" TEXT,
     "role" INTEGER NOT NULL DEFAULT 15,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -76,10 +76,10 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "RefreshToken" (
     "id" SERIAL NOT NULL,
-    "refresh_token" TEXT NOT NULL,
-    "access_token" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "refreshToken" TEXT NOT NULL,
+    "accessToken" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("id")
@@ -122,9 +122,12 @@ CREATE TABLE "Variation" (
 CREATE TABLE "Order" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
+    "total" DECIMAL(65,30) NOT NULL,
+    "subtotal" DECIMAL(65,30) NOT NULL,
     "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
     "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
     "transactionCode" TEXT,
+    "paymentMethodId" INTEGER NOT NULL,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
@@ -163,9 +166,33 @@ CREATE TABLE "PaymentMethod" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "apiKey" TEXT,
-    "orderId" INTEGER NOT NULL,
 
     CONSTRAINT "PaymentMethod_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Setting" (
+    "id" SERIAL NOT NULL,
+    "language" TEXT NOT NULL,
+    "currency" TEXT NOT NULL,
+    "timezone" TEXT NOT NULL,
+    "dateFormat" TEXT NOT NULL,
+
+    CONSTRAINT "Setting_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" SERIAL NOT NULL,
+    "transactionAlert" BOOLEAN NOT NULL DEFAULT true,
+    "lowStockAlert" BOOLEAN NOT NULL DEFAULT false,
+    "exclusiveOffer" BOOLEAN NOT NULL DEFAULT false,
+    "emailNotification" BOOLEAN NOT NULL DEFAULT true,
+    "pushNotification" BOOLEAN NOT NULL DEFAULT false,
+    "smsNotification" BOOLEAN NOT NULL DEFAULT false,
+    "adminId" INTEGER NOT NULL,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -184,10 +211,10 @@ CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_refresh_token_key" ON "RefreshToken"("refresh_token");
+CREATE UNIQUE INDEX "RefreshToken_refreshToken_key" ON "RefreshToken"("refreshToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_access_token_key" ON "RefreshToken"("access_token");
+CREATE UNIQUE INDEX "RefreshToken_accessToken_key" ON "RefreshToken"("accessToken");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Attribute_attributeCode_key" ON "Attribute"("attributeCode");
@@ -196,10 +223,13 @@ CREATE UNIQUE INDEX "Attribute_attributeCode_key" ON "Attribute"("attributeCode"
 CREATE UNIQUE INDEX "AttributeValue_code_value_key" ON "AttributeValue"("code", "value");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Order_paymentMethodId_key" ON "Order"("paymentMethodId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "DeliveryInformation_orderId_key" ON "DeliveryInformation"("orderId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PaymentMethod_orderId_key" ON "PaymentMethod"("orderId");
+CREATE UNIQUE INDEX "Notification_adminId_key" ON "Notification"("adminId");
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -226,6 +256,9 @@ ALTER TABLE "Variation" ADD CONSTRAINT "Variation_productId_fkey" FOREIGN KEY ("
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_paymentMethodId_fkey" FOREIGN KEY ("paymentMethodId") REFERENCES "PaymentMethod"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -235,4 +268,4 @@ ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("
 ALTER TABLE "DeliveryInformation" ADD CONSTRAINT "DeliveryInformation_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PaymentMethod" ADD CONSTRAINT "PaymentMethod_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "Admin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

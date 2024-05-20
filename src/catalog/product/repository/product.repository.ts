@@ -17,12 +17,14 @@ export class ProductRepository {
                         include: {
                             attributeValue: true
                         }
-                    }
+                    },
+                    gallery: true
                 }
             });
-            return products;
-        } catch (error) {
 
+            return { message: "Successful", products };
+        } catch (error) {
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -35,28 +37,37 @@ export class ProductRepository {
     // }
 
     async findById(id: number) {
-        const product = await this.getModel().findUnique({
-            where: { id },
-            include: {
-                variations: {
-                    include: {
-                        attributeValue: true
-                    }
-                }
-            }
-        });
-
-        return product;
-    }
-
-    async create(createProductDto) {
         try {
-            console.log('createProduct', createProductDto);
-            const product = await this.getModel().create({
-                data: { ...createProductDto }
+            const product = await this.getModel().findUnique({
+                where: { id },
+                include: {
+                    variations: {
+                        include: {
+                            attributeValue: true
+                        }
+                    },
+                    gallery: true
+                }
             });
 
-            return product;
+            return { message: "Successful ", product };
+        } catch (error) {
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    async create(createProductDto, gallery = []) {
+        try {
+            const product = await this.getModel().create({
+                data: {
+                    ...createProductDto,
+                    gallery: {
+                        create: gallery
+                    }
+                }
+            });
+
+            return { message: "Product Created Successfully", product };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -67,18 +78,21 @@ export class ProductRepository {
         }
     }
 
-    async createProductWithVariation(createProduct, variation) {
+    async createProductWithVariation(createProduct, variation, gallery = []) {
         try {
             const product = await this.getModel().create({
                 data: {
                     ...createProduct,
                     variations: {
                         create: variation
+                    },
+                    gallery: {
+                        create: gallery
                     }
                 }
             });
 
-            return product;
+            return { message: "Product Created Successfully", product };
         } catch (error) {
             console.log('error', error)
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -92,7 +106,7 @@ export class ProductRepository {
                 where: { id }
             });
 
-            return product;
+            return { message: "Product Updated Successfully", product };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -109,12 +123,10 @@ export class ProductRepository {
                 where: { id }
             });
 
-            return true;
+            return { message: "Product deleted successfully", data: [] };
         } catch (error) {
-
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
-
-        return false;
     }
 
     private getModel() {

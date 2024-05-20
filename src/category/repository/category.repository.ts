@@ -11,19 +11,23 @@ export class CategoryRepository {
 
     async findAll() {
         try {
-            const category = await this.prismaService.category.findMany();
-            return category;
-        } catch (error) {
+            const categories = await this.prismaService.category.findMany();
 
+            return { message: "Successful", categories };
+        } catch (error) {
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
     }
 
     // Use only for auth modules as it returns the password as well
     async findBySlug(slug: string) {
         const category = await this.prismaService.category.findUnique({
-            where: { slug }
+            where: { slug },
+            include: {
+                products: true
+            }
         })
-        return category;
+        return { message: "Successful", category };
     }
 
     async findById(id: number) {
@@ -31,7 +35,7 @@ export class CategoryRepository {
             where: { id }
         });
 
-        return category;
+        return { message: "Successful", category };
     }
 
     async findCategoryProducts(id: number) {
@@ -40,22 +44,23 @@ export class CategoryRepository {
             include: {
                 products: {
                     include: {
-                        variations: true
-                    }
+                        variations: true,
+                        gallery: true
+                    },
                 }
             }
         });
 
-        return category;
+        return { message: "Successful", category };
     }
 
     async create(createCategoryDto: CreateCategoryDto) {
         try {
-            const user = await this.prismaService.category.create({
+            const category = await this.prismaService.category.create({
                 data: { ...createCategoryDto }
             });
 
-            return user;
+            return { message: "Successfully Created Category", category };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -73,7 +78,7 @@ export class CategoryRepository {
                 where: { id }
             });
 
-            return category;
+            return { message: "Successfully Updated Category", category };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -90,12 +95,10 @@ export class CategoryRepository {
                 where: { id }
             });
 
-            return true;
+            return { message: "Successfully Deleted Category" };
         } catch (error) {
-
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
-
-        return false;
     }
 
     private exclude<User, Key extends keyof User>(

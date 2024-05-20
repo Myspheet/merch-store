@@ -80,7 +80,7 @@ export class UserRepository {
     async updateRefreshToken(userId: number, refreshToken: string) {
         const user = await this.getModel().update({
             where: { id: userId },
-            data: { refresh_token: refreshToken }
+            data: { refreshToken }
         });
 
         return this.exclude(user, ['password']);

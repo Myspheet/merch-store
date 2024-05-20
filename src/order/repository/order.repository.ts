@@ -54,13 +54,13 @@ export class OrderRepository {
                     user: {
                         select: {
                             email: true,
-                            phone_number: true
+                            phoneNumber: true
                         }
                     }
                 }
             });
 
-            return { message: "Successfull", order };
+            return { message: "Successful", order };
 
         } catch (error) {
             console.log(error);
@@ -70,10 +70,11 @@ export class OrderRepository {
 
     async create(createOrderDto: CreateOrderDto, userId: number) {
         try {
-            const { deliveryInformation, orderItems } = createOrderDto
+            const { deliveryInformation, orderItems, ...orderDetail } = createOrderDto
             const order = await this.getModel().create({
                 data: {
                     userId,
+                    ...orderDetail,
                     deliveryInformation: {
                         create: { ...deliveryInformation }
                     },
@@ -89,22 +90,22 @@ export class OrderRepository {
         }
     }
 
-    async createOrderWithVariation(createOrder, variation) {
-        try {
-            const order = await this.getModel().create({
-                data: {
-                    ...createOrder,
-                    variations: {
-                        create: variation
-                    }
-                }
-            });
+    // async createOrderWithVariation(createOrder, variation) {
+    //     try {
+    //         const order = await this.getModel().create({
+    //             data: {
+    //                 ...createOrder,
+    //                 variations: {
+    //                     create: variation
+    //                 }
+    //             }
+    //         });
 
-            return { mesage: "Order Created Successfully", order };
-        } catch (error) {
+    //         return { mesage: "Order Created Successfully", order };
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
 
     async update(id: number, updateOrderDto) {
         try {

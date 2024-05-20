@@ -7,7 +7,7 @@ export class RefreshTokenRepository {
 
     async findByRefreshToken(refreshToken: string) {
         const token = await this.prismaService.refreshToken.findUnique({
-            where: { refresh_token: refreshToken },
+            where: { refreshToken },
             include: {
                 user: {
                     select: {
@@ -23,7 +23,7 @@ export class RefreshTokenRepository {
 
     async findByAccessToken(accessToken: string) {
         const token = await this.prismaService.refreshToken.findUnique({
-            where: { access_token: accessToken },
+            where: { accessToken },
             include: {
                 user: {
                     select: {
@@ -41,7 +41,7 @@ export class RefreshTokenRepository {
         try {
             const { refreshToken, accessToken, userId } = createRefreshToken;
             const newRefreshToken = await this.prismaService.refreshToken.create({
-                data: { refresh_token: refreshToken, access_token: accessToken, userId },
+                data: { refreshToken, accessToken, userId },
             });
 
             return newRefreshToken;
@@ -53,8 +53,8 @@ export class RefreshTokenRepository {
     async update(updateRefreshTokenDto, oldRefreshToken?: string) {
         const { refreshToken, accessToken } = updateRefreshTokenDto;
         const newRefreshToken = await this.prismaService.refreshToken.update({
-            where: { refresh_token: oldRefreshToken },
-            data: { refresh_token: refreshToken, access_token: accessToken },
+            where: { refreshToken: oldRefreshToken },
+            data: { refreshToken: refreshToken, accessToken },
         });
 
         return newRefreshToken

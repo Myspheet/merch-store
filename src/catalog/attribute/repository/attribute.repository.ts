@@ -17,9 +17,10 @@ export class AttributeRepository {
                     attributeValues: true
                 }
             });
-            return attributes;
-        } catch (error) {
 
+            return { message: "Successful", attributes };
+        } catch (error) {
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -32,14 +33,18 @@ export class AttributeRepository {
     // }
 
     async findById(id: number) {
-        const product = await this.getModel().findUnique({
-            where: { id },
-            include: {
-                attributeValues: true
-            }
-        });
+        try {
+            const attribute = await this.getModel().findUnique({
+                where: { id },
+                include: {
+                    attributeValues: true
+                }
+            });
 
-        return product;
+            return { message: "Successful", attribute };
+        } catch (error) {
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
+        }
     }
 
     async create(createAttributeDto: CreateAttributeDto) {
@@ -48,11 +53,11 @@ export class AttributeRepository {
                 data: { ...createAttributeDto }
             });
 
-            return attribute;
+            return { message: "Successful Created Attribute", attribute };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
-                throw new ConflictException("The category already exists");
+                throw new ConflictException("The attribute already exists");
             }
 
             throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
@@ -71,11 +76,11 @@ export class AttributeRepository {
                 }
             });
 
-            return attribute;
+            return { message: "Successful", attribute };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
-                throw new ConflictException("The category already exists");
+                throw new ConflictException("The attribute already exists");
             }
 
             throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
@@ -89,7 +94,7 @@ export class AttributeRepository {
                 where: { id }
             });
 
-            return attribute;
+            return { message: "Successfully Updated Attribute", attribute };
         } catch (error) {
             console.log(error);
             if (error.code == 'P2002') {
@@ -106,12 +111,11 @@ export class AttributeRepository {
                 where: { id }
             });
 
-            return true;
+            return { message: "Successful Deleted Attribute" };
+
         } catch (error) {
-
+            throw new HttpException("There was an error, please try again", HttpStatus.BAD_REQUEST);
         }
-
-        return false;
     }
 
     private getModel() {

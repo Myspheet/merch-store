@@ -7,7 +7,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         await this.$connect();
     }
 
-    getPrismaClient(model: string) {
+    getModel(model: string) {
         return this[model];
     }
 }

@@ -15,6 +15,8 @@ export class ResourceInterceptor implements NestInterceptor {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
+    console.log('error', exception)
+
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
     response.status(status).json({
@@ -30,8 +32,9 @@ export class ResourceInterceptor implements NestInterceptor {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
+    console.log('got here first', res);
     const statusCode = response.statusCode;
-    const { message, ...data } = res;
+    const { message = '', ...data } = res ?? { message: '', data: [] };
 
     return {
       status: true,

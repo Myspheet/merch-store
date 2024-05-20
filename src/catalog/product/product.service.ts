@@ -7,14 +7,14 @@ import { ProductRepository } from './repository/product.repository';
 export class ProductService {
   constructor(private readonly productRepository: ProductRepository) { }
 
-  create(createProductDto) {
+  create(createProductDto, gallery = []) {
     const { variation = [], ...product } = createProductDto;
 
     if (variation.length > 0) {
-      return this.productRepository.createProductWithVariation(product, variation);
+      return this.productRepository.createProductWithVariation(product, variation, gallery);
     }
 
-    return this.productRepository.create(product);
+    return this.productRepository.create(product, gallery);
   }
 
   async findAll() {

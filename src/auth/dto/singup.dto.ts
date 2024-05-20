@@ -19,5 +19,5 @@ export class SignUpDto {
 
     @ApiPropertyOptional()
     @IsOptional()
-    phone_number?: string
+    phoneNumber?: string
 }

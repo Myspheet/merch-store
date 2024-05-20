@@ -83,7 +83,7 @@ export class AuthService {
 
     async logout(token: string) {
         //delete the refreshtoken from the refrestToken table
-        await this.refreshTokenRepository.delete({ access_token: token });
+        await this.refreshTokenRepository.delete({ accessToken: token });
         return { message: 'Logout Successfully' }
     }
 
@@ -95,7 +95,7 @@ export class AuthService {
 
             const token = await this.refreshTokenRepository.findByRefreshToken(refreshToken);
 
-            if (token.refresh_token != refreshToken && token.access_token !== user.accessToken) throw new UnauthorizedException("Invalid Tokens");
+            if (token.refreshToken != refreshToken && token.accessToken !== user.accessToken) throw new UnauthorizedException("Invalid Tokens");
 
             return this.generateTokens({ sub: token.user.id, email: token.user.email }, refreshToken);
         } catch (error) {

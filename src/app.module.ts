@@ -8,11 +8,12 @@ import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { OrderModule } from './order/order.module';
+import { SettingModule } from './setting/setting.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
-  }), UserModule, AuthModule, PrismaModule, CategoryModule, CatalogModule, OrderModule],
+  }), UserModule, AuthModule, PrismaModule, CategoryModule, CatalogModule, OrderModule, SettingModule],
   controllers: [AppController],
   providers: [AppService],
 })
