@@ -11,31 +11,42 @@ const attributes = [
         id: 2,
         attributeName: 'Size',
         attributeCode: 'size'
+    },
+    {
+        id: 3,
+        attributeName: 'Graphics',
+        attributeCode: 'graphics'
     }
 ];
 
 const attributeValue = [
     {
+        id: 1,
         value: '2XL',
         code: 'size',
     },
     {
+        id: 2,
         value: 'XL',
         code: 'size',
     },
     {
+        id: 3,
         value: 'L',
         code: 'size',
     },
     {
+        id: 4,
         value: 'M',
         code: 'size',
     },
     {
+        id: 5,
         value: 'S',
         code: 'size',
     },
     {
+        id: 6,
         value: 'XS',
         code: 'size',
     }
@@ -43,24 +54,85 @@ const attributeValue = [
 
 const attributeColorValue = [
     {
-        value: 'red',
+        id: 7,
+        value: 'white',
         code: 'color',
+        imageUrl: '/shirts/white.png'
     },
     {
+        id: 8,
+        value: 'black',
+        code: 'color',
+        imageUrl: '/shirts/black.png'
+    },
+    {
+        id: 9,
         value: 'blue',
         code: 'color',
+        imageUrl: '/shirts/blue.png'
     },
     {
-        value: 'green',
+        id: 10,
+        value: 'red',
         code: 'color',
+        imageUrl: '/shirts/red.png'
     },
     {
+        id: 11,
         value: 'yellow',
         code: 'color',
+        imageUrl: '/shirts/yellow.png'
     },
     {
-        value: 'brown',
+        id: 12,
+        value: 'purple',
         code: 'color',
+        imageUrl: '/shirts/purple.png'
+    },
+    {
+        id: 13,
+        value: 'green',
+        code: 'color',
+        imageUrl: '/shirts/green.png'
+    }
+];
+
+const attributeGraphicValue = [
+    {
+        id: 14,
+        value: '1',
+        code: 'graphics',
+        imageUrl: '1.png'
+    },
+    {
+        id: 15,
+        value: '2',
+        code: 'graphics',
+        imageUrl: '2.png'
+    },
+    {
+        id: 16,
+        value: '3',
+        code: 'graphics',
+        imageUrl: '3.png'
+    },
+    {
+        id: 17,
+        value: '4',
+        code: 'graphics',
+        imageUrl: '4.png'
+    },
+    {
+        id: 18,
+        value: '5',
+        code: 'graphics',
+        imageUrl: '5.png'
+    },
+    {
+        id: 19,
+        value: '6',
+        code: 'graphics',
+        imageUrl: '6.png'
     }
 ];
 
@@ -77,17 +149,17 @@ const products = [
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 1
+                attributeValueId: 11
             },
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 2
+                attributeValueId: 10
             },
             {
                 attributeId: 2,
                 attributeCode: "size",
-                attributeValueId: 9
+                attributeValueId: 1
             }
         ]
     },
@@ -103,17 +175,17 @@ const products = [
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 1
+                attributeValueId: 11
             },
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 2
+                attributeValueId: 10
             },
             {
                 attributeId: 2,
                 attributeCode: "size",
-                attributeValueId: 9
+                attributeValueId: 2
             }
         ]
     },
@@ -129,17 +201,17 @@ const products = [
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 1
+                attributeValueId: 10
             },
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 2
+                attributeValueId: 9
             },
             {
                 attributeId: 2,
                 attributeCode: "size",
-                attributeValueId: 9
+                attributeValueId: 3
             }
         ]
     },
@@ -155,39 +227,100 @@ const products = [
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 1
+                attributeValueId: 11
             },
             {
                 attributeId: 1,
                 attributeCode: "color",
-                attributeValueId: 2
+                attributeValueId: 9
             },
             {
                 attributeId: 2,
                 attributeCode: "size",
-                attributeValueId: 9
+                attributeValueId: 3
             }
         ]
     },
 ];
 
 async function main() {
-    attributes.forEach(async (attribute) => {
+    for (let i = 0; i < attributes.length; i++) {
+        const attribute = attributes[i];
         await prisma.attribute.upsert({
             where: { id: attribute.id },
             update: {},
             create: {
                 id: attribute.id,
                 attributeName: attribute.attributeName,
-                attributeCode: attribute.attributeCode,
-                attributeValues: {
-                    create: attribute.id == 1 ? attributeColorValue : attributeValue
-                }
+                attributeCode: attribute.attributeCode
             }
         });
-    });
+    }
+    // attributes.forEach(async (attribute) => {
+    //     await prisma.attribute.upsert({
+    //         where: { id: attribute.id },
+    //         update: {},
+    //         create: {
+    //             id: attribute.id,
+    //             attributeName: attribute.attributeName,
+    //             attributeCode: attribute.attributeCode,
+    //             attributeValues: {
+    //                 create: attribute.id == 1 ? attributeColorValue : attributeValue
+    //             }
+    //         }
+    //     });
+    // });
 
-    products.forEach(async (attribute) => {
+    for (let i = 0; i < attributeValue.length; i++) {
+        const attribute = attributeValue[i];
+
+        await prisma.attributeValue.upsert({
+            where: { id: attribute.id },
+            update: {},
+            create: {
+                id: attribute.id,
+                code: attribute.code,
+                value: attribute.value,
+                attributeId: 2
+            }
+        });
+    }
+
+    for (let i = 0; i < attributeColorValue.length; i++) {
+        const attribute = attributeColorValue[i]
+
+        await prisma.attributeValue.upsert({
+            where: { id: attribute.id },
+            update: {},
+            create: {
+                id: attribute.id,
+                code: attribute.code,
+                value: attribute.value,
+                imageUrl: attribute.imageUrl,
+                attributeId: 1
+            }
+        });
+    }
+
+    for (let i = 0; i < attributeGraphicValue.length; i++) {
+        const attribute = attributeGraphicValue[i]
+
+        await prisma.attributeValue.upsert({
+            where: { id: attribute.id },
+            update: {},
+            create: {
+                id: attribute.id,
+                code: attribute.code,
+                value: attribute.value,
+                imageUrl: attribute.imageUrl,
+                attributeId: 3
+            }
+        });
+    }
+
+    for (let i = 0; i < products.length; i++) {
+        const attribute = products[i]
+
         const { variation, ...product } = attribute;
         await prisma.product.upsert({
             where: { slug: attribute.slug },
@@ -199,7 +332,8 @@ async function main() {
                 }
             }
         });
-    });
+    }
+
 
     // attributeValue.forEach(async (attribute) => {
     //     await prisma.attributeValue.upsert({
@@ -209,18 +343,45 @@ async function main() {
     //             id: attribute.id,
     //             code: attribute.code,
     //             value: attribute.value,
-    //             attributeId: attribute.attributeId
+    //             attributeId: 2
+    //         }
+    //     });
+    // });
+
+    // attributeColorValue.forEach(async (attribute) => {
+    //     await prisma.attributeValue.upsert({
+    //         where: { id: attribute.id },
+    //         update: {},
+    //         create: {
+    //             id: attribute.id,
+    //             code: attribute.code,
+    //             value: attribute.value,
+    //             attributeId: 1
+    //         }
+    //     });
+    // });
+
+    // products.forEach(async (attribute) => {
+    //     const { variation, ...product } = attribute;
+    //     await prisma.product.upsert({
+    //         where: { slug: attribute.slug },
+    //         update: {},
+    //         create: {
+    //             ...product,
+    //             variations: {
+    //                 create: variation
+    //             }
     //         }
     //     });
     // });
 }
 
-// main()
-//     .then(async () => {
-//         await prisma.$disconnect()
-//     })
-//     .catch(async (e) => {
-//         console.error(e)
-//         await prisma.$disconnect()
-//         process.exit(1)
-//     })
+main()
+    .then(async () => {
+        await prisma.$disconnect()
+    })
+    .catch(async (e) => {
+        console.error(e)
+        await prisma.$disconnect()
+        process.exit(1)
+    })

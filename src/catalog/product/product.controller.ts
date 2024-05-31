@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AdminJwtAuthGuard } from 'src/auth/strategy/jwt/admin-auth.guard';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'node:path';
 
@@ -15,6 +15,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
   @Post()
+  @ApiConsumes('multipart/form-data')
   @UseGuards(AdminJwtAuthGuard)
   @UseInterceptors(FilesInterceptor('files', 10, {
     storage: diskStorage({

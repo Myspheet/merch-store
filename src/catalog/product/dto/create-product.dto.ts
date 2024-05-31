@@ -34,6 +34,6 @@ export class CreateProductDto {
     @ApiProperty()
     variation: any;
 
-    @ApiProperty()
-    files: File;
+    @ApiPropertyOptional({ type: 'string', format: 'binary', required: false })
+    files: Express.Multer.File;
 }

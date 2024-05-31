@@ -10,6 +10,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ResourceInterceptor());
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Rhapsody Merch Store')
     .setDescription('The Rhapsody Merch Store API description')
